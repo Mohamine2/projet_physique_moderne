@@ -5,12 +5,15 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+
 #f = fonction d'onde initiale  V|(x,0)
 #v = potentiel V(x)
 #dx = pas d'espace
 #dt = pas de temps
 #nt = durée en fonction du nombre iteration temporelle
 
+"1er algo pour equation différentielle"
+"propagation d'un paquet d'onde"
 def proba_particule(f, V, dx, dt, nt):
 
     #creation tableau densité pour |(V|(x,t))|
@@ -20,7 +23,7 @@ def proba_particule(f, V, dx, dt, nt):
 
     h = 1  #(h = h barre) = constante de planck
     m = 1  #masse de la particule
-    s = dt / dx**2
+    s = dt / dx**2 #?
 
     laplacien = np.zeros(nx, dtype=complex)
 
@@ -44,4 +47,36 @@ def proba_particule(f, V, dx, dt, nt):
     transmission = np.sum(np.abs(transmission_zone)**2) * dx
     return densities, transmission
 
+"algo 3 pour résoudre analytiquement"
+"avec solution de Schroginder"
+def resolution_schrodinger(E, V0, a):
+    # a = largeur du puits
+    # V0 < 0 (puits)
+    #hbar = 1
+    m = 1
+    if E > 0 and V0 < 0:
+        k = np.sqrt(2 * m * E)
+        kappa = np.sqrt(2 * m * (E - V0))
+        numerator = 4 * k**2 * kappa**2
+        denominator = (k**2 + kappa**2)**2 * np.sin(kappa * a)**2 + 4 * k**2 * kappa**2
+        T = numerator / denominator
+        return T
+    else:
+        return 0
 
+def effet_ramsauer(V_potential, dx, dt, nt, x_array, v0):
+    E_values = np.linspace(1, 30, 50)
+    T_numerique = []
+
+    sigma = 0.05
+    xc = 0.9
+
+    for E in E_values:
+        k = math.sqrt(2 * E)
+        normalisation = 1 / (math.sqrt(sigma * math.sqrt(math.pi)))
+        wp_gauss = normalisation * np.exp(1j * k * x_array - ((x_array - xc) ** 2) / (2 * (sigma ** 2)))
+        
+        _, T = proba_particule(wp_gauss, V_potential, dx, dt, nt)
+        T_numerique.append(T)
+
+    return E_values, T_numerique
