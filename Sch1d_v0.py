@@ -113,14 +113,4 @@ plt.ylabel("Densité de probabilité de présence")
 ani = animation.FuncAnimation(fig, animate, init_func=init,
                               frames=n_frames, blit=False, interval=100, repeat=False)
 
-import os
-
-# Sauvegarde toujours l'animation
-ani.save("animation.mp4", fps=30, dpi=150)
-print("✅ Animation sauvegardée sous 'animation.mp4'")
-
-# Affiche uniquement si une interface graphique est dispo
-if "DISPLAY" in os.environ:
-    plt.show()
-else:
-    print("ℹ️ Aucun affichage graphique détecté (mode terminal).")
+plt.show()
