@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.sparse import diags
 from scipy.sparse.linalg import spsolve
+from etats_stationnaires import etats_stationnaires #Appel de la fonction
 
 # === Paramètres physiques et numériques ===
 dt = 1E-7
@@ -68,7 +69,27 @@ for t in range(1, nt):
         final_density[t // 1000, :] = density[t, :]
 
 
+# === États stationnaires ===
+n_etats = 3
+energies, etats = etats_stationnaires(V_potential, dx, n_etats=n_etats)
 
+# Tracé des états stationnaires
+plt.figure()
+for i in range(n_etats):
+    psi = etats[:, i]
+    norm = np.max(np.abs(psi)**2)
+    plt.plot(x_array, np.abs(psi)**2 / norm + energies[i], label=f"État {i+1}, E={energies[i]:.1f}")
+plt.plot(x_array, V_potential, 'k--', label="Potentiel")
+plt.title("États stationnaires dans le puits")
+plt.xlabel("x")
+plt.ylabel("Densité normalisée + Énergie")
+plt.legend()
+plt.grid()
+plt.tight_layout()
+plt.show()
+
+
+# === Animation Crank-Nicolson ===
 def init():
     line.set_data([], [])
     return line,
@@ -92,4 +113,14 @@ plt.ylabel("Densité de probabilité de présence")
 ani = animation.FuncAnimation(fig, animate, init_func=init,
                               frames=n_frames, blit=False, interval=100, repeat=False)
 
-plt.show()
+import os
+
+# Sauvegarde toujours l'animation
+ani.save("animation.mp4", fps=30, dpi=150)
+print("✅ Animation sauvegardée sous 'animation.mp4'")
+
+# Affiche uniquement si une interface graphique est dispo
+if "DISPLAY" in os.environ:
+    plt.show()
+else:
+    print("ℹ️ Aucun affichage graphique détecté (mode terminal).")
