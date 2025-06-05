@@ -6,6 +6,10 @@ from scipy.sparse import diags
 from scipy.sparse.linalg import spsolve
 from etats_stationnaires import etats_stationnaires #Appel de la fonction
 
+#puits gaussien
+def potentiel_gaussien(x_array, V0, x0, sigma):
+    return -V0 * np.exp(-((x_array - x0) ** 2) / (2 * sigma**2))
+
 # === Paramètres physiques et numériques ===
 dt = 1E-7
 dx = 0.001
@@ -19,8 +23,11 @@ E = e * v0
 k = math.sqrt(2 * abs(E))
 
 x_array = np.linspace(0, (nx - 1) * dx, nx)
-V_potential = np.zeros(nx)
-V_potential[int(nx * 0.45):int(nx * 0.55)] = v0  # Puits centré
+
+#puits carré/rectangulaire
+#V_potential = np.zeros(nx)
+#V_potential[int(nx * 0.45):int(nx * 0.55)] = v0  # Puits centré
+
 
 xc = 0.6
 sigma = 0.05
@@ -33,6 +40,9 @@ density[0, :] = np.abs(wp_gauss)**2
 final_density = np.zeros((n_frames, nx))
 
 
+
+#puits gaussien
+V_potential = potentiel_gaussien(x_array, abs(v0), xc, sigma)
 
 # Constantes pour Crank-Nicolson
 hbar = 1  # unités naturelles
