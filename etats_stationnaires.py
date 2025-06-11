@@ -1,23 +1,18 @@
 import numpy as np
 from scipy.linalg import eigh_tridiagonal
-
-"2e algo pour les états stationnaires"
 def etats_stationnaires(V, dx, n_etats=5):
-    """
-    Calcule les n premiers états stationnaires pour un potentiel V(x)
-    avec une méthode de discrétisation et résolution de valeurs propres.
-    """
     nx = len(V)
+    hbar = 1
+    m = 1
+    facteur = hbar**2 / (2 * m * dx**2)
 
-    #paramètre dans la formule
-    h = 1 #constante planck
-    m = 1 #masse
+    diag = 2 * facteur + V
+    hors_diag = -facteur * np.ones(nx - 1)
 
-    #discrétisation
-    diag = 1 / dx**2 + V
-    hors_diag = -0.5 / dx**2 * np.ones(nx - 1)
-
-    # résolution du problème aux valeurs propres
     energies, vecteurs_propres = eigh_tridiagonal(diag, hors_diag)
+
+    # Normalisation continue
+    for i in range(n_etats):
+        vecteurs_propres[:, i] /= np.sqrt(np.trapz(np.abs(vecteurs_propres[:, i])**2, dx=dx))
 
     return energies[:n_etats], vecteurs_propres[:, :n_etats]

@@ -13,14 +13,14 @@ nx = int(1/dx)*2
 nt = 90000
 n_frames = int(nt / 1000) + 1
 
-v0 = -4000
+v0 = -100 
 e = 5
 E = e * v0
 k = math.sqrt(2 * abs(E))
 
 x_array = np.linspace(0, (nx - 1) * dx, nx)
 V_potential = np.zeros(nx)
-V_potential[int(nx * 0.45):int(nx * 0.55)] = v0  # Puits centré
+V_potential[int(nx * 0.3):int(nx * 0.7)] = v0  # 40 % de largeur, puits centré
 
 xc = 0.6
 sigma = 0.05
@@ -78,7 +78,7 @@ plt.figure()
 for i in range(n_etats):
     psi = etats[:, i]
     norm = np.max(np.abs(psi)**2)
-    plt.plot(x_array, np.abs(psi)**2 / norm + energies[i], label=f"État {i+1}, E={energies[i]:.1f}")
+    plt.plot(x_array, 10 * np.abs(psi)**2 / norm + energies[i], label=f"État {i+1}, E={energies[i]:.1f}")
 plt.plot(x_array, V_potential, 'k--', label="Potentiel")
 plt.title("États stationnaires dans le puits")
 plt.xlabel("x")
